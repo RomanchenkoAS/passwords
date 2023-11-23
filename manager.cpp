@@ -32,3 +32,18 @@
 //    Getters/setters
 //    Authorization: get username/password and open manager
 //    Settings menu: set autodestruct, change password or hint
+#include <string>
+
+using namespace std;
+
+class User {
+private:
+    string username;
+    string password_hash;
+    string password_hint;
+    bool authorized;
+public:
+    User() : authorized(false) {};
+
+    ~User();
+};
