@@ -36,11 +36,26 @@
 
 using namespace std;
 
+class BasePassword {
+protected:
+    string hash;
+    string hint;
+public:
+//    Compare
+};
+
+class Password: public BasePassword{
+
+};
+
+class MasterPassword: public BasePassword{
+
+};
+
 class User {
 private:
     string username;
-    string password_hash;
-    string password_hint;
+    MasterPassword password;
     bool authorized;
 public:
     User() : authorized(false) {};
