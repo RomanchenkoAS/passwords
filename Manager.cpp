@@ -33,6 +33,7 @@
 //    Authorization: get username/password and open manager
 //    Settings menu: set autodestruct, change password or hint
 #include <string>
+#include "Hasher.h"
 
 using namespace std;
 
@@ -44,12 +45,19 @@ public:
 //    Compare
 };
 
-class Password: public BasePassword{
+class Password : public BasePassword {
 
 };
 
-class MasterPassword: public BasePassword{
+class MasterPassword : public BasePassword {
+public:
+    MasterPassword() = default;
 
+    explicit MasterPassword(string &username) {
+//            Hash name
+//            Find db with username
+//            Read content of first line into hash
+    }
 };
 
 class User {
@@ -58,7 +66,16 @@ private:
     MasterPassword password;
     bool authorized;
 public:
-    User() : authorized(false) {};
+    explicit User(string &username) : username(username), authorized(false) {
+//        Create a MasterPassword instance
+    };
+
+    void auth_sequence(string &input_password) {
+//        Password input(input_password);
+//        Create a Password instance
+//        Validate against MasterPassword
+//        Set auth = true
+    };
 
     ~User();
 };

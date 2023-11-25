@@ -5,4 +5,6 @@ set(CMAKE_CXX_STANDARD 14)
 
 add_executable(passwords
         main.cpp
-        manager.cpp)
+        Manager.cpp
+        Hasher.h
+        Hasher.cpp)
