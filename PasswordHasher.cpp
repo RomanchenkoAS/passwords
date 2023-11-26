@@ -1,4 +1,4 @@
-#include "Hasher.h"
+#include "PasswordHasher.h"
 
 // Functions implementation go here
 #include <algorithm> // for std::transform()
@@ -7,16 +7,8 @@
 
 #include <bitset> // for debugging
 
-void AbstractHasher::toHex() {
+void AbstractPasswordHasher::toHex() {
     // Transform binary hash string into hexadecimal
-#ifdef DEBUG
-    std::cout << "Binary string:" << std::endl;
-    for (unsigned char c: binary_hash) {
-        std::bitset<8> bits(c);
-        std::cout << bits << ' ';
-    }
-    std::cout << std::endl;
-#endif
     std::stringstream ss;
     for (char byte: binary_hash) {
         /*
@@ -31,7 +23,7 @@ void AbstractHasher::toHex() {
     std::transform(hash.begin(), hash.end(), hash.begin(), ::toupper);
 }
 
-void AbstractHasher::calculateHash() {
+void AbstractPasswordHasher::calculateHash() {
     EVP_MD_CTX *digest_context = EVP_MD_CTX_new();
     if (digest_context == nullptr) {
         throw std::runtime_error("Failed to create EVP_MD_CTX");
@@ -39,10 +31,9 @@ void AbstractHasher::calculateHash() {
 //        Initialize digest operation
     initializeDigest(digest_context);
 
-//        Process chunks of data and update hash_array
-    char buffer[4096];
-    while (file.read(buffer, sizeof(buffer)) || file.gcount()) {
-        if (EVP_DigestUpdate(digest_context, buffer, file.gcount()) != 1) {
+//        Process input and update hash_array
+    if (!input.empty()) {
+        if (EVP_DigestUpdate(digest_context, input.data(), input.size()) != 1) {
             EVP_MD_CTX_free(digest_context);
             throw std::runtime_error("Failed to update digest");
         }
@@ -64,24 +55,24 @@ void AbstractHasher::calculateHash() {
     toHex();
 };
 
-void AbstractHasher::checkHash() {
+void AbstractPasswordHasher::checkHash() {
 //        Make sure hash is already generated
     if (binary_hash.empty()) {
         calculateHash();
     }
 }
 
-std::string AbstractHasher::getHash() {
+std::string AbstractPasswordHasher::getHash() {
     checkHash();
     return hash;
 }
 
-std::string AbstractHasher::getBinaryHash() {
+std::string AbstractPasswordHasher::getBinaryHash() {
     checkHash();
     return binary_hash;
 }
 
-void AbstractHasher::showBinaryHash() {
+void AbstractPasswordHasher::showBinaryHash() {
     checkHash();
     for (unsigned char c: binary_hash) {
         std::bitset<8> bits(c);
@@ -90,11 +81,11 @@ void AbstractHasher::showBinaryHash() {
     std::cout << std::endl;
 }
 
-void AbstractHasher::showHash() {
+void AbstractPasswordHasher::showHash() {
     std::cout << getHash() << std::endl;
 }
 
-bool AbstractHasher::validate(const std::string &input) {
+bool AbstractPasswordHasher::validate(const std::string &input) {
     checkHash();
 //    Uppercase input string
     std::string compare_string = input;
