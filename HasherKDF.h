@@ -5,6 +5,7 @@
 #include <openssl/kdf.h> // for ciphering data
 
 class HasherKDF {
+//    Two-way encryptor/decryptor using Key Derivation Function (KDF)
 private:
     // Key derivation function
     static std::string deriveKey(const std::string &key);
@@ -16,10 +17,10 @@ public:
     HasherKDF() = default;
 
     // Encrypts the input string using the key
-    std::string encrypt(const std::string &key, const std::string &input);
+    [[nodiscard]] static std::string encrypt(const std::string &key, const std::string &input);
 
     // Decrypts the input string using the key
-    std::string decrypt(const std::string &key, const std::string &inputHex);
+    [[nodiscard]] static std::string decrypt(const std::string &key, const std::string &inputHex);
 };
 
 #endif //PASSWORDS_HASHERKDF_H

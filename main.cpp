@@ -22,16 +22,31 @@ int main() {
         manager.displayPasswords();
     }
 
-    cout << "\n\nTesting encrypter:\n";
-
-    HasherKDF encrypter;
-    string key = "artur";
-    string value = "vk,999";
-    string encrypted_string = encrypter.encrypt(key, value);
-    cout << encrypted_string << endl;
-
-    string decrypted = encrypter.decrypt(key, encrypted_string);
-    cout << decrypted << endl;
+//    cout << "\n\nTesting encryptor:\n";
+//
+//    HasherKDF encryptor;
+//    string key = "artur";
+//    string value = "vk,999";
+//    string encrypted_string = encryptor.encrypt(key, value);
+//    cout << encrypted_string << endl;
+//    string decrypted = encryptor.decrypt(key, encrypted_string);
+//    cout << decrypted << endl;
+//
+//
+//    key = "artur";
+//    value = "google,123";
+//    encrypted_string = encryptor.encrypt(key, value);
+//    cout << encrypted_string << endl;
+//    decrypted = encryptor.decrypt(key, encrypted_string);
+//    cout << decrypted << endl;
+//
+//
+//    key = "artur";
+//    value = "yandex,567";
+//    encrypted_string = encryptor.encrypt(key, value);
+//    cout << encrypted_string << endl;
+//    decrypted = encryptor.decrypt(key, encrypted_string);
+//    cout << decrypted << endl;
 
     return 0;
 

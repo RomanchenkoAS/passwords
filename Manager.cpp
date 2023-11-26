@@ -25,6 +25,7 @@
 
 
 #include "PasswordHasher.h"
+#include "HasherKDF.h"
 
 using namespace std;
 
@@ -140,8 +141,11 @@ public:
     }
 
     static string decrypt(const string &key, string &line) {
-//    TODO use KDF to encrypt/decrypt data in file
-        return line;
+        return HasherKDF::decrypt(key, line);
+    };
+
+    static string encrypt(const string &key, string &line) {
+        return HasherKDF::encrypt(key, line);
     };
 
     static pair<string, string> parse(const string &line) {
