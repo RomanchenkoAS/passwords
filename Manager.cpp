@@ -22,6 +22,7 @@
 #include <sstream> // for line by line reading
 #include <utility>
 #include <vector>
+#include <algorithm> // for std::transform()
 
 
 #include "PasswordHasher.h"
@@ -72,6 +73,11 @@ public:
 
     void display() {
         cout << name << ": " << value << endl;
+    }
+
+    [[nodiscard]] string getCSV() const {
+//        Return Comma Separated Value of password for writing in DB
+        return name + "," + value;
     }
 };
 
@@ -164,15 +170,16 @@ public:
         }
     }
 
-    void open_file() {
+    void openFile() {
         file.open(filename);
         if (!file) {
-            throw runtime_error("Failed to open " + filename);
+            throw runtime_error("Failed to open " + filename + " for reading.");
         }
     };
 
     void initialize() {
-        open_file();
+//        Read passwords from file and create Password instances
+        openFile();
         if (file.is_open()) {
             // Skip the first line that contains master password
             string temp;
@@ -184,6 +191,9 @@ public:
                 const auto [name, value] = parse(line);
                 passwords_list.push_back(Password(name, value));
             }
+            file.close();
+        } else {
+            throw runtime_error("Failed to open " + filename + " for reading.");
         }
     };
 
@@ -194,8 +204,33 @@ public:
         }
     }
 
-    //      constructor takes username&password and opens file and calls readFromFile(master_password)
-//      read from file - read file and decipher and fill passwords vector
-//      create_password / delete_password / alter_password
-//      user menu
+    void writePasswords() {
+//        Overwrite content of user passwords file
+        ifstream infile(filename);
+        if (!infile) {
+            throw runtime_error("Failed to open " + filename + " for reading.");
+        }
+
+//        To keep master password hash
+        string masterPasswordHash;
+        getline(infile, masterPasswordHash);
+        infile.close();
+
+        ofstream outfile(filename);
+        if (!outfile) {
+            throw runtime_error("Failed to open " + filename + " for writing.");
+        }
+
+        // Write master password hash back to the file
+        outfile << masterPasswordHash << endl;
+
+        for (const auto &password: passwords_list) {
+            string passwordCSV = password.getCSV();
+            string encryptedLine = encrypt(user->getEncryptionKey(), passwordCSV);
+            std::transform(encryptedLine.begin(), encryptedLine.end(), encryptedLine.begin(), ::toupper);
+            outfile << encryptedLine << endl;
+        }
+
+        outfile.close();
+    }
 };

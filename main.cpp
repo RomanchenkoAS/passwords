@@ -13,15 +13,6 @@ int main() {
 //    cout << "Master password instance:\n";
 //    MasterPassword mp(PasswordHasher(username).getHash());
 
-    User user(username);
-    string password = "1234";
-    user.auth_sequence(password);
-    if (user.isAuthorized()) {
-        Manager manager(&user);
-        manager.initialize();
-        manager.displayPasswords();
-    }
-
 //    cout << "\n\nTesting encryptor:\n";
 //
 //    HasherKDF encryptor;
@@ -45,6 +36,17 @@ int main() {
 //    cout << encrypted_string << endl;
 //    decrypted = encryptor.decrypt(key, encrypted_string);
 //    cout << decrypted << endl;
+
+    User user(username);
+    string password = "1234";
+    user.auth_sequence(password);
+    if (user.isAuthorized()) {
+        Manager manager(&user);
+        manager.initialize();
+        manager.displayPasswords();
+        manager.writePasswords();
+    }
+
 
     return 0;
 
