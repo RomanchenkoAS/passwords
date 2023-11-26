@@ -16,7 +16,7 @@ int main() {
     string password = "1234";
     user.auth_sequence(password);
     if (user.isAuthorized()) {
-        Manager(&user, user.getFilename());
+        Manager manager(&user);
     }
     return 0;
 
