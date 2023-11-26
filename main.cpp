@@ -17,6 +17,8 @@ int main() {
     user.auth_sequence(password);
     if (user.isAuthorized()) {
         Manager manager(&user);
+        manager.initialize();
+        manager.displayPasswords();
     }
     return 0;
 

@@ -136,7 +136,7 @@ private:
 
 public:
     explicit Manager(User *user) : user(user), filename(PasswordHasher(user->getUsername()).getHash()) {
-        cout << "Manager created\n";
+//        cout << "Manager created\n";
     }
 
     static string decrypt(const string &key, string &line) {
