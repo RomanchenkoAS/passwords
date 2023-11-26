@@ -1,6 +1,6 @@
 #include <iostream>
 #include "Manager.cpp" // must be a headerfile
-#include "Hasher.h" // not needed here
+#include "HasherKDF.h" // not needed here
 
 using namespace std;
 
