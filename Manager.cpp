@@ -33,7 +33,7 @@
 //    Authorization: get username/password and open manager
 //    Settings menu: set autodestruct, change password or hint
 #include <string>
-#include "Hasher.h"
+#include "PasswordHasher.h"
 
 using namespace std;
 
