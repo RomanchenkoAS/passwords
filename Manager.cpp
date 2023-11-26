@@ -96,6 +96,8 @@ public:
     explicit MasterPassword(const string &username) {
         setPassword(username);
     }
+
+    [[nodiscard]] string getHash() const { if (!hash.empty()) return hash; }
 };
 
 class User {
@@ -121,6 +123,8 @@ public:
     };
 
     [[nodiscard]] string getUsername() const { return username; }
+
+    [[nodiscard]] string getEncryptionKey() const { return username + master_password.getHash(); }
 
     [[nodiscard]] bool isAuthorized() const { return authorized; }
 
@@ -176,7 +180,7 @@ public:
 
             string line;
             while (getline(file, line)) {
-                line = decrypt(user->getUsername(), line);
+                line = decrypt(user->getEncryptionKey(), line);
                 const auto [name, value] = parse(line);
                 passwords_list.push_back(Password(name, value));
             }
