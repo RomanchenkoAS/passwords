@@ -13,7 +13,6 @@ using namespace std;
 class BasePassword {
 protected:
     string hash;
-    string hint;
 public:
 
     bool operator==(const BasePassword &other) const {
@@ -25,11 +24,6 @@ public:
         return hash;
     }
 
-    void setHint(string &new_hint) {
-        hint = new_hint;
-    }
-
-    [[nodiscard]] string getHint() const { return hint; }
 };
 
 class Password : public BasePassword {
@@ -43,9 +37,9 @@ public:
 //        For manager usage - store all values
     };
 
-    explicit Password(const string &plaintext_password) {
+    explicit Password(const string &plaintextPassword) {
 //        For authorization, does not store plaintext value
-        hash = PasswordHasher(plaintext_password).getHash();
+        hash = PasswordHasher(plaintextPassword).getHash();
     }
 
     void display() {
@@ -57,6 +51,7 @@ public:
         return name + "," + value;
     }
 
+//    Unused
     [[nodiscard]] string getName() const { return name; }
 };
 
@@ -68,8 +63,8 @@ public:
 
     void setPassword(const string &username) {
 //            Find file with user's username for file name
-        string name_hash = PasswordHasher(username).getHash();
-        string filename = dataPath + name_hash;
+        string nameHash = PasswordHasher(username).getHash();
+        string filename = dataPath + nameHash;
 
         ifstream file(filename);
         if (!file) {
@@ -89,30 +84,30 @@ public:
 class User {
 private:
     string username;
-    MasterPassword master_password;
+    MasterPassword masterPassword;
     bool authorized;
     const string dataPath;
 public:
     explicit User(string &username, const string &path) : username(username), authorized(false), dataPath(path),
-                                                          master_password(username, path) {
+                                                          masterPassword(username, path) {
         try {
-            master_password.setPassword(username);
+            masterPassword.setPassword(username);
         }
         catch (const runtime_error &error) {
             throw std::runtime_error("Failed to initialize user: " + string(error.what()));
         }
     };
 
-    void auth_sequence(string &input) {
-        Password input_password(input);
-        if (input_password == master_password) {
+    void authSequence(string &input) {
+        Password inputPassword(input);
+        if (inputPassword == masterPassword) {
             authorized = true;
         }
     };
 
     [[nodiscard]] string getUsername() const { return username; }
 
-    [[nodiscard]] string getEncryptionKey() const { return username + master_password.getHash(); }
+    [[nodiscard]] string getEncryptionKey() const { return username + masterPassword.getHash(); }
 
     [[nodiscard]] bool isAuthorized() const { return authorized; }
 
@@ -124,7 +119,7 @@ class Manager {
 private:
     User *user;
     string filename;
-    vector<Password> passwords_list;
+    vector<Password> passwordsList;
     ifstream file;
 
 public:
@@ -172,7 +167,7 @@ public:
             while (getline(file, line)) {
                 line = decrypt(user->getEncryptionKey(), line);
                 const auto [name, value] = parse(line);
-                passwords_list.push_back(Password(name, value));
+                passwordsList.push_back(Password(name, value));
             }
             file.close();
         } else {
@@ -182,9 +177,9 @@ public:
 
     void displayPasswords() {
         cout << endl << user->getUsername() << "'s passwords: \n";
-        for (int i = 0; i < passwords_list.size(); i++) {
+        for (int i = 0; i < passwordsList.size(); i++) {
             cout << i + 1 << ". ";
-            passwords_list[i].display();
+            passwordsList[i].display();
         }
     }
 
@@ -208,7 +203,7 @@ public:
 //        Write master password hash back to the file
         outfile << masterPasswordHash << endl;
 
-        for (const auto &password: passwords_list) {
+        for (const auto &password: passwordsList) {
             string passwordCSV = password.getCSV();
             string encryptedLine = encrypt(user->getEncryptionKey(), passwordCSV);
             std::transform(encryptedLine.begin(), encryptedLine.end(), encryptedLine.begin(), ::toupper);
@@ -219,7 +214,7 @@ public:
     }
 
     void createPassword(const string &name, const string &password) {
-        passwords_list.push_back(Password(name, password));
+        passwordsList.push_back(Password(name, password));
         writePasswords();
     }
 
@@ -233,8 +228,8 @@ public:
     }
 
     int deletePassword(int index) {
-        if (index < passwords_list.size()) {
-            passwords_list.erase(passwords_list.begin() + index);
+        if (index < passwordsList.size()) {
+            passwordsList.erase(passwordsList.begin() + index);
             writePasswords();
             return 0;
         } else {

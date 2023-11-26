@@ -22,7 +22,7 @@ int main() {
     string username = "artur";
     User user(username, dataDir);
     string password = "1234";
-    user.auth_sequence(password);
+    user.authSequence(password);
     if (user.isAuthorized()) {
         Manager manager(&user, dataDir);
         manager.initialize();
