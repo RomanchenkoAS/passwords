@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PASSWORDS_HASHERKDF_H
 #define PASSWORDS_HASHERKDF_H
 

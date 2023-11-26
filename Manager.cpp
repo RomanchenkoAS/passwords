@@ -248,7 +248,7 @@ public:
 
     void createPasswordMenu() {
         string name, password;
-        cout << "Name: ";
+        cout << "\nName: ";
         cin >> name;
         cout << "Password: ";
         cin >> password;
@@ -266,6 +266,10 @@ public:
     }
 
     void deletePasswordMenu() {
+        if (passwordsList.empty()) {
+            cout << endl << "No passwords in " << user->getUsername() << "'s manager yet.\n";
+            return;
+        }
         int index;
         cout << "\nIndex of password to delete (0 to cancel action): ";
         cin >> index;

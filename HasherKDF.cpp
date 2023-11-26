@@ -1,6 +1,6 @@
 #include "HasherKDF.h"
 
-#include <iomanip>
+#include <iomanip> // for toHex and fromHex manipulations
 #include <openssl/evp.h>
 
 std::string toHex(const unsigned char *data, size_t length) {
@@ -52,12 +52,14 @@ std::string HasherKDF::encrypt(const std::string &key, const std::string &input)
     ciphertext.resize(input.size() + EVP_MAX_BLOCK_LENGTH);
     int len = 0;
 
+//    Add to digest context
     if (!EVP_CipherUpdate(ctx, reinterpret_cast<unsigned char *>(&ciphertext[0]), &len,
                           reinterpret_cast<const unsigned char *>(input.data()), input.size())) {
         EVP_CIPHER_CTX_free(ctx);
         throw std::runtime_error("Encryption failed");
     }
 
+//    Finalize digest context
     int finalLen = 0;
     if (!EVP_CipherFinal_ex(ctx, reinterpret_cast<unsigned char *>(&ciphertext[len]), &finalLen)) {
         EVP_CIPHER_CTX_free(ctx);
@@ -65,12 +67,16 @@ std::string HasherKDF::encrypt(const std::string &key, const std::string &input)
     }
 
     ciphertext.resize(len + finalLen);
+
+//    Deallocate memory
     EVP_CIPHER_CTX_free(ctx);
 
+//    Transform to hexadecimal before return
     return toHex(reinterpret_cast<const unsigned char *>(ciphertext.data()), ciphertext.size());
 }
 
 std::string HasherKDF::decrypt(const std::string &key, const std::string &inputHex) {
+//    Reversed encrypt with "false" in initialization
     std::string input = fromHex(inputHex);
 
     EVP_CIPHER_CTX *ctx = EVP_CIPHER_CTX_new();

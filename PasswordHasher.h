@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PASSWORD_HASHER_H
 #define PASSWORD_HASHER_H
 

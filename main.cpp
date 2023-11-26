@@ -1,9 +1,6 @@
 #include <iostream>
 #include <filesystem> // for getting data directory path
-//#include <pair>
 #include "Manager.cpp" // must be a headerfile
-
-using namespace std;
 
 std::string getBasePath() {
     return std::filesystem::current_path().string();
@@ -55,7 +52,7 @@ int main() {
     const string basePath = getBasePath();
     const string dataDir = basePath + "/../data/";
 
-    // Check if dataDir exists
+    // Make sure dataDir exists
     if (!std::filesystem::exists(dataDir)) {
         std::filesystem::create_directories(dataDir);
     }
@@ -66,11 +63,18 @@ int main() {
         switch (choice) {
             case 1: {
                 auto [username, password] = logInMenu();
-                User user(username, password, dataDir);
-                user.authSequence(password);
-                if (user.isAuthorized()) {
+                User *userPtr;
+                try {
+                    User user(username, password, dataDir);
+                    user.authSequence(password);
+
+                } catch (std::runtime_error &) {
+                    cout << "\nUsername or password don't match.\n";
+                    break;
+                }
+                if (userPtr->isAuthorized()) {
                     cout << "\nHello, " << username << "!\n";
-                    Manager manager(&user, dataDir);
+                    Manager manager(userPtr, dataDir);
                     manager.initialize();
                     manager.menu();
                 }
@@ -96,25 +100,5 @@ int main() {
         }
     } while (choice != 0);
 
-//      MANAGING EXISTING USER
-//    string username = "artur";
-//    string username = "artchie";
-//    string password = "1234";
-//    User user(username, password, dataDir);
-//    user.authSequence(password);
-//    if (user.isAuthorized()) {
-//        Manager manager(&user, dataDir);
-//        manager.initialize();
-//        manager.menu();
-//    }
-
-//      MANAGING NEW USER
-//    string username = "artchie";
-//    string password = "1234";
-//    User new_user(dataDir);
-//    new_user.registerSequence(username, password);
-
     return 0;
-
-
 }
