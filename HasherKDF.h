@@ -7,10 +7,10 @@
 class HasherKDF {
 //    Two-way encryptor/decryptor using Key Derivation Function (KDF)
 private:
-    // Key derivation function
+//    Key derivation function
     static std::string deriveKey(const std::string &key);
 
-    // Common initialization for encryption and decryption
+//    Common initialization for encryption and decryption
     static void initializeCipher(EVP_CIPHER_CTX *ctx, const std::string &key, bool encrypting);
 
 public:

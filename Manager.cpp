@@ -1,5 +1,6 @@
 #include <string>
 #include <vector>
+#include <filesystem> // for checking if a file exists
 #include <fstream> // for reading/writing files
 #include <sstream> // for line by line reading
 #include <algorithm> // for transform(), remove_if()
@@ -88,14 +89,20 @@ private:
     bool authorized;
     const string dataPath;
 public:
-    explicit User(string &username, const string &path) : username(username), authorized(false), dataPath(path),
-                                                          masterPassword(username, path) {
+    User(const string &path) : authorized(false), dataPath(path) {
+//        New user constructor
+    };
+
+    explicit User(string &username, string &password, const string &path) :
+            username(username), authorized(false), dataPath(path), masterPassword(username, path) {
+//        Existing user constructor
         try {
             masterPassword.setPassword(username);
         }
         catch (const runtime_error &error) {
             throw std::runtime_error("Failed to initialize user: " + string(error.what()));
         }
+        authSequence(password);
     };
 
     void authSequence(string &input) {
@@ -104,6 +111,23 @@ public:
             authorized = true;
         }
     };
+
+    int registerSequence(string &new_username, string &new_password) {
+        string nameHash = PasswordHasher(new_username).getHash();
+        string filename = dataPath + nameHash;
+        if (std::filesystem::exists(filename)) {
+            return 1;
+        } else {
+            // Create a file for this user
+            std::ofstream createdFile(filename);
+            if (!createdFile) {
+                throw std::runtime_error("Failed to create file: " + filename);
+            }
+            createdFile << Password(new_password).getHash();
+            createdFile.close();
+            return 0;
+        }
+    }
 
     [[nodiscard]] string getUsername() const { return username; }
 
@@ -176,6 +200,10 @@ public:
     };
 
     void displayPasswords() {
+        if (passwordsList.empty()) {
+            cout << endl << "No passwords in " << user->getUsername() << "'s manager yet.\n";
+            return;
+        }
         cout << endl << user->getUsername() << "'s passwords: \n";
         for (int i = 0; i < passwordsList.size(); i++) {
             cout << i + 1 << ". ";
