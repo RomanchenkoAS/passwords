@@ -66,24 +66,6 @@ std::string AbstractPasswordHasher::getHash() {
     return hash;
 }
 
-std::string AbstractPasswordHasher::getBinaryHash() {
-    checkHash();
-    return binary_hash;
-}
-
-void AbstractPasswordHasher::showBinaryHash() {
-    checkHash();
-    for (unsigned char c: binary_hash) {
-        std::bitset<8> bits(c);
-        std::cout << bits << ' ';
-    }
-    std::cout << std::endl;
-}
-
-void AbstractPasswordHasher::showHash() {
-    std::cout << getHash() << std::endl;
-}
-
 bool AbstractPasswordHasher::validate(const std::string &input) {
     checkHash();
 //    Uppercase input string

@@ -17,17 +17,17 @@ int mainMenu() {
     return choice;
 }
 
-pair<string, string> logInMenu() {
-    string username, password;
+std::pair<std::string, std::string> logInMenu() {
+    std::string username, password;
     std::cout << "\nUsername: ";
     std::cin >> username;
     std::cout << "Password: ";
     std::cin >> password;
-    return make_pair(string(username), string(password));
+    return make_pair(std::string(username), std::string(password));
 }
 
-pair<string, string> registerMenu() {
-    string username, password = "1", passwordConfirmation = "2";
+std::pair<std::string, std::string> registerMenu() {
+    std::string username, password = "1", passwordConfirmation = "2";
     while (true) {
         if (username.empty()) {
 //            Skip entering username if it is already entered
@@ -44,13 +44,13 @@ pair<string, string> registerMenu() {
             break;
         }
     }
-    return make_pair(string(username), string(password));
+    return make_pair(std::string(username), std::string(password));
 }
 
 int main() {
 
-    const string basePath = getBasePath();
-    const string dataDir = basePath + "/../data/";
+    const std::string basePath = getBasePath();
+    const std::string dataDir = basePath + "/../data/";
 
     // Make sure dataDir exists
     if (!std::filesystem::exists(dataDir)) {
@@ -63,20 +63,18 @@ int main() {
         switch (choice) {
             case 1: {
                 auto [username, password] = logInMenu();
-                User *userPtr;
                 try {
                     User user(username, password, dataDir);
                     user.authSequence(password);
-
-                } catch (std::runtime_error &) {
-                    cout << "\nUsername or password don't match.\n";
+                    if (user.isAuthorized()) {
+                        std::cout << "\nHello, " << username << "!\n";
+                        Manager manager(&user, dataDir);
+                        manager.initialize();
+                        manager.menu();
+                    }
+                } catch (const std::runtime_error &error) {
+                    std::cout << "\nError: " << error.what() << std::endl;
                     break;
-                }
-                if (userPtr->isAuthorized()) {
-                    cout << "\nHello, " << username << "!\n";
-                    Manager manager(userPtr, dataDir);
-                    manager.initialize();
-                    manager.menu();
                 }
                 break;
             }

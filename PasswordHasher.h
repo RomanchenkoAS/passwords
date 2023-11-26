@@ -42,15 +42,7 @@ public:
 
     std::string getHash();
 
-    std::string getBinaryHash();
-
-    void showBinaryHash();
-
-    void showHash();
-
     bool validate(const std::string &input);
-
-    virtual std::string getMethod() = 0;
 
 };
 
@@ -61,8 +53,6 @@ private:
 
 public:
     using AbstractPasswordHasher::AbstractPasswordHasher;
-
-    std::string getMethod() override { return "SHA256"; }
 
 };
 
