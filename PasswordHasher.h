@@ -76,5 +76,4 @@ public:
     }
 };
 
-
 #endif //PASSWORD_HASHER_H

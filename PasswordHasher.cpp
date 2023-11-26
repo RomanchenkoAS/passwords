@@ -4,7 +4,6 @@
 #include <algorithm> // for std::transform()
 #include <fstream>
 #include <iomanip> // for input/output manipulation (toHex)
-
 #include <bitset> // for displaying binary hash (debug)
 
 void AbstractPasswordHasher::toHex() {
