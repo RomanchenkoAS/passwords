@@ -22,7 +22,6 @@
 #include <sstream> // for line by line reading
 #include <utility>
 #include <vector>
-#include <tuple> // for string parsing
 
 
 #include "PasswordHasher.h"
@@ -57,21 +56,21 @@ public:
 class Password : public BasePassword {
 private:
     string name;
+    string value;
 public:
     Password() = delete;
 
-    explicit Password(string name, string hint, string hash) : name(std::move(name)) {
-        this->hash = std::move(hash);
-        this->hint = std::move(hint);
+    explicit Password(string name, string value) : name(std::move(name)), value(std::move(value)) {
+//        For manager usage - store all values
     };
 
     explicit Password(const string &plaintext_password) {
+//        For authorization, does not store plaintext value
         hash = PasswordHasher(plaintext_password).getHash();
     }
 
     void display() {
-//        PASSWORD MUST STORE PLAINTEXT
-        cout << name << ""
+        cout << name << ": " << value << endl;
     }
 };
 
@@ -145,13 +144,13 @@ public:
         return line;
     };
 
-    static tuple<string, string, string> parse(const string &line) {
+    static pair<string, string> parse(const string &line) {
 //        Parse comma separated string into three values
         stringstream ss(line);
-        string s1, s2, s3;
+        string s1, s2;
 
-        if (getline(ss, s1, ',') && getline(ss, s2, ',') && getline(ss, s3)) {
-            return make_tuple(s1, s2, s3);
+        if (getline(ss, s1, ',') && getline(ss, s2, ',')) {
+            return make_pair(s1, s2);
         } else {
             throw std::runtime_error("Invalid line format");
         }
@@ -174,15 +173,16 @@ public:
             string line;
             while (getline(file, line)) {
                 line = decrypt(user->getUsername(), line);
-                const auto [name, hint, hash] = parse(line);
-                passwords_list.push_back(Password(name, hint, hash));
+                const auto [name, value] = parse(line);
+                passwords_list.push_back(Password(name, value));
             }
         }
     };
 
     void displayPasswords() {
-        for (Password p: passwords_list) {
-            p.display();
+        for (int i = 0; i < passwords_list.size(); i++) {
+            cout << i + 1 << ". ";
+            passwords_list[i].display();
         }
     }
 
