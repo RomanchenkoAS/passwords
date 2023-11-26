@@ -13,7 +13,8 @@ add_executable(passwords
         main.cpp
         Manager.cpp
         PasswordHasher.h
-        PasswordHasher.cpp)
+        PasswordHasher.cpp
+        HasherKDF.h)
 
 # Link OpenSSL to executable
 target_link_libraries(passwords OpenSSL::SSL OpenSSL::Crypto)
