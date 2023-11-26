@@ -1,16 +1,13 @@
 #include <string>
-#include <fstream> // for reading data from files
-#include <sstream> // for line by line reading
 #include <vector>
+#include <fstream> // for reading/writing files
+#include <sstream> // for line by line reading
 #include <algorithm> // for transform(), remove_if()
-
 
 #include "PasswordHasher.h"
 #include "HasherKDF.h"
 
 using namespace std;
-
-const string BASE_PATH = "/home/artur/dev/passwords/cmake-build-debug/";
 
 
 class BasePassword {
@@ -64,14 +61,15 @@ public:
 };
 
 class MasterPassword : public BasePassword {
+private:
+    string dataPath;
 public:
     MasterPassword() = default;
 
     void setPassword(const string &username) {
+//            Find file with user's username for file name
         string name_hash = PasswordHasher(username).getHash();
-//            Find db with username
-//        TODO SOLVE ISSUE WITH BASE PATH
-        string filename = BASE_PATH + name_hash;
+        string filename = dataPath + name_hash;
 
         ifstream file(filename);
         if (!file) {
@@ -81,7 +79,7 @@ public:
         getline(file, hash);
     }
 
-    explicit MasterPassword(const string &username) {
+    explicit MasterPassword(const string &username, const string &path) : dataPath(path) {
         setPassword(username);
     }
 
@@ -93,8 +91,10 @@ private:
     string username;
     MasterPassword master_password;
     bool authorized;
+    const string dataPath;
 public:
-    explicit User(string &username) : username(username), authorized(false), master_password() {
+    explicit User(string &username, const string &path) : username(username), authorized(false), dataPath(path),
+                                                          master_password(username, path) {
         try {
             master_password.setPassword(username);
         }
@@ -128,7 +128,8 @@ private:
     ifstream file;
 
 public:
-    explicit Manager(User *user) : user(user), filename(PasswordHasher(user->getUsername()).getHash()) {
+    explicit Manager(User *user, const string &path) : user(user),
+                                                       filename(path + PasswordHasher(user->getUsername()).getHash()) {
 //        cout << "Manager created\n";
     }
 
@@ -180,7 +181,7 @@ public:
     };
 
     void displayPasswords() {
-        cout << endl << user->getUsername() << "passwords: \n";
+        cout << endl << user->getUsername() << "'s passwords: \n";
         for (int i = 0; i < passwords_list.size(); i++) {
             cout << i + 1 << ". ";
             passwords_list[i].display();
@@ -218,8 +219,6 @@ public:
     }
 
     void createPassword(const string &name, const string &password) {
-//        Maybe add check if password with this name already
-//        Not really necessary though
         passwords_list.push_back(Password(name, password));
         writePasswords();
     }
@@ -245,11 +244,15 @@ public:
 
     void deletePasswordMenu() {
         int index;
-        cout << "Index of password to delete (empty input to cancel action): ";
+        cout << "\nIndex of password to delete (0 to cancel action): ";
         cin >> index;
-        int status = deletePassword(index);
-        if (status == 1) {
-            cout << "Invalid index." << endl;
+        if (index == 0) {
+            cout << "Action canceled." << endl;
+        } else {
+            int status = deletePassword(index - 1);
+            if (status == 1) {
+                cout << "Invalid index." << endl;
+            }
         }
     };
 
