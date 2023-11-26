@@ -20,7 +20,10 @@
 #include <string>
 #include <fstream> // for reading data from files
 #include <sstream> // for line by line reading
+#include <utility>
 #include <vector>
+#include <tuple> // for string parsing
+
 
 #include "PasswordHasher.h"
 
@@ -52,11 +55,23 @@ public:
 };
 
 class Password : public BasePassword {
+private:
+    string name;
 public:
     Password() = delete;
 
+    explicit Password(string name, string hint, string hash) : name(std::move(name)) {
+        this->hash = std::move(hash);
+        this->hint = std::move(hint);
+    };
+
     explicit Password(const string &plaintext_password) {
         hash = PasswordHasher(plaintext_password).getHash();
+    }
+
+    void display() {
+//        PASSWORD MUST STORE PLAINTEXT
+        cout << name << ""
     }
 };
 
@@ -118,12 +133,58 @@ private:
     User *user;
     string filename;
     vector<Password> passwords_list;
+    ifstream file;
+
 public:
     explicit Manager(User *user) : user(user), filename(PasswordHasher(user->getUsername()).getHash()) {
         cout << "Manager created\n";
     }
 
-    void initialize() {};
+    static string decrypt(const string &key, string &line) {
+//    TODO use KDF to encrypt/decrypt data in file
+        return line;
+    };
+
+    static tuple<string, string, string> parse(const string &line) {
+//        Parse comma separated string into three values
+        stringstream ss(line);
+        string s1, s2, s3;
+
+        if (getline(ss, s1, ',') && getline(ss, s2, ',') && getline(ss, s3)) {
+            return make_tuple(s1, s2, s3);
+        } else {
+            throw std::runtime_error("Invalid line format");
+        }
+    }
+
+    void open_file() {
+        file.open(filename);
+        if (!file) {
+            throw runtime_error("Failed to open " + filename);
+        }
+    };
+
+    void initialize() {
+        open_file();
+        if (file.is_open()) {
+            // Skip the first line that contains master password
+            string temp;
+            getline(file, temp);
+
+            string line;
+            while (getline(file, line)) {
+                line = decrypt(user->getUsername(), line);
+                const auto [name, hint, hash] = parse(line);
+                passwords_list.push_back(Password(name, hint, hash));
+            }
+        }
+    };
+
+    void displayPasswords() {
+        for (Password p: passwords_list) {
+            p.display();
+        }
+    }
 
     //      constructor takes username&password and opens file and calls readFromFile(master_password)
 //      read from file - read file and decipher and fill passwords vector
