@@ -25,8 +25,13 @@ int main() {
     cout << "\n\nTesting encrypter:\n";
 
     HasherKDF encrypter;
-    cout << encrypter.encrypt("artur", "vk: 999") << endl;
-    cout << encrypter.decrypt("artur", "74fa20a9a45f623e8a9d724cd7f45759") << endl;
+    string key = "artur";
+    string value = "vk,999";
+    string encrypted_string = encrypter.encrypt(key, value);
+    cout << encrypted_string << endl;
+
+    string decrypted = encrypter.decrypt(key, encrypted_string);
+    cout << decrypted << endl;
 
     return 0;
 
