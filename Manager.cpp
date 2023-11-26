@@ -1,28 +1,8 @@
-// Password
-//  Fields
-//      label, text
-//  Methods
-//      getters/setters
-
-
-// Manager
-//  Fields
-//      file
-//      filename
-//      user
-//      Password: master_password
-//      passwords vector
-
-//  Methods
-
-
-
 #include <string>
 #include <fstream> // for reading data from files
 #include <sstream> // for line by line reading
-#include <utility>
 #include <vector>
-#include <algorithm> // for std::transform()
+#include <algorithm> // for transform(), remove_if()
 
 
 #include "PasswordHasher.h"
@@ -79,6 +59,8 @@ public:
 //        Return Comma Separated Value of password for writing in DB
         return name + "," + value;
     }
+
+    [[nodiscard]] string getName() const { return name; }
 };
 
 class MasterPassword : public BasePassword {
@@ -198,6 +180,7 @@ public:
     };
 
     void displayPasswords() {
+        cout << endl << user->getUsername() << "passwords: \n";
         for (int i = 0; i < passwords_list.size(); i++) {
             cout << i + 1 << ". ";
             passwords_list[i].display();
@@ -221,7 +204,7 @@ public:
             throw runtime_error("Failed to open " + filename + " for writing.");
         }
 
-        // Write master password hash back to the file
+//        Write master password hash back to the file
         outfile << masterPasswordHash << endl;
 
         for (const auto &password: passwords_list) {
@@ -232,5 +215,76 @@ public:
         }
 
         outfile.close();
+    }
+
+    void createPassword(const string &name, const string &password) {
+//        Maybe add check if password with this name already
+//        Not really necessary though
+        passwords_list.push_back(Password(name, password));
+        writePasswords();
+    }
+
+    void createPasswordMenu() {
+        string name, password;
+        cout << "Name: ";
+        cin >> name;
+        cout << "Password: ";
+        cin >> password;
+        createPassword(name, password);
+    }
+
+    int deletePassword(int index) {
+        if (index < passwords_list.size()) {
+            passwords_list.erase(passwords_list.begin() + index);
+            writePasswords();
+            return 0;
+        } else {
+            return 1;
+        }
+    }
+
+    void deletePasswordMenu() {
+        int index;
+        cout << "Index of password to delete (empty input to cancel action): ";
+        cin >> index;
+        int status = deletePassword(index);
+        if (status == 1) {
+            cout << "Invalid index." << endl;
+        }
+    };
+
+
+    void menu() {
+        int choice;
+        do {
+            std::cout << "\nMenu:\n";
+            std::cout << "1. Display passwords\n";
+            std::cout << "2. Add password\n";
+            std::cout << "3. Delete password\n";
+            std::cout << "0. Exit\n";
+            std::cout << "Enter your choice: ";
+            std::cin >> choice;
+
+            switch (choice) {
+                case 1: {
+                    displayPasswords();
+                    break;
+                }
+                case 2: {
+                    createPasswordMenu();
+                    break;
+                }
+                case 3: {
+                    deletePasswordMenu();
+                    break;
+                }
+                case 0: {
+                    break;
+                }
+                default: {
+                    std::cout << "Invalid choice. Please try again.\n";
+                }
+            }
+        } while (choice != 0);
     }
 };

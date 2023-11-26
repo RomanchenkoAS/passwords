@@ -43,8 +43,9 @@ int main() {
     if (user.isAuthorized()) {
         Manager manager(&user);
         manager.initialize();
-        manager.displayPasswords();
-        manager.writePasswords();
+//        manager.displayPasswords();
+//        manager.writePasswords();
+        manager.menu();
     }
 
 
