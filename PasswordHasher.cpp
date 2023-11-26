@@ -5,7 +5,7 @@
 #include <fstream>
 #include <iomanip> // for input/output manipulation (toHex)
 
-#include <bitset> // for debugging
+#include <bitset> // for displaying binary hash (debug)
 
 void AbstractPasswordHasher::toHex() {
     // Transform binary hash string into hexadecimal
