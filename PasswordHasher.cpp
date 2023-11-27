@@ -7,7 +7,7 @@
 #include <bitset> // for displaying binary hash (debug)
 
 void AbstractPasswordHasher::toHex() {
-    // Transform binary hash string into hexadecimal
+//    Transform binary hash string into hexadecimal
     std::stringstream ss;
     for (char byte: binary_hash) {
         /*
