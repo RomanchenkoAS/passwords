@@ -1,6 +1,6 @@
 #include <iostream>
 #include <filesystem> // for getting data directory path
-#include "Manager.cpp" // must be a headerfile
+#include "Manager.cpp" // TODO must be a headerfile
 
 std::string getBasePath() {
     return std::filesystem::current_path().string();
@@ -63,10 +63,12 @@ int main() {
         switch (choice) {
             case 1: {
                 auto [username, password] = logInMenu();
+                User user(username, password, dataDir);
+
                 try {
-                    User user(username, password, dataDir);
-                    user.authSequence(password);
-                    if (user.isAuthorized()) {
+                    if (user.authSequence(password) == 1) {
+                        std::cout << "\nInvalid username or password. " << std::endl;
+                    } else {
                         std::cout << "\nHello, " << username << "!\n";
                         Manager manager(&user, dataDir);
                         manager.initialize();
@@ -74,18 +76,22 @@ int main() {
                     }
                 } catch (const std::runtime_error &error) {
                     std::cout << "\nError: " << error.what() << std::endl;
-                    break;
                 }
                 break;
             }
             case 2: {
                 auto [username, password] = registerMenu();
                 User new_user(dataDir);
-                int result = new_user.registerSequence(username, password);
-                if (result == 1) {
-                    std::cout << "\nUser already exists, choose a different username.";
-                } else {
-                    std::cout << "\nUser created, now log in with provided credentials.";
+
+                try {
+
+                    if (new_user.registerSequence(username, password) == 1) {
+                        std::cout << "\nUser already exists, choose a different username.";
+                    } else {
+                        std::cout << "\nUser created, now log in with provided credentials.";
+                    }
+                } catch (const std::runtime_error &error) {
+                    std::cout << "\nInvalid username or password. " << std::endl;
                 }
                 break;
             }

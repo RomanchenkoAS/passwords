@@ -59,24 +59,23 @@ public:
 class MasterPassword : public BasePassword {
 private:
     std::string dataPath;
+    std::string username;
 public:
     MasterPassword() = default;
 
-    void setPassword(const std::string &username) {
-//            Find file with user's username for file name
-        std::string nameHash = PasswordHasher(username).getHash();
+    int setPassword(const std::string &inputUsername, const std::string &path) {
+        dataPath = path;
+//        Find file with user's username for file name
+        std::string nameHash = PasswordHasher(inputUsername).getHash();
         std::string filename = dataPath + nameHash;
 
         std::ifstream file(filename);
         if (!file) {
-            throw std::runtime_error("Data for this user is not found.");
+            return 1;
         }
-//            Read content of first line into hash
+//        Read content of first line into hash
         getline(file, hash);
-    }
-
-    explicit MasterPassword(const std::string &username, const std::string &path) : dataPath(path) {
-        setPassword(username);
+        return 0;
     }
 
     [[nodiscard]] std::string getHash() const { if (!hash.empty()) return hash; }
@@ -94,23 +93,19 @@ public:
     };
 
     explicit User(std::string &username, std::string &password, const std::string &path) :
-            username(username), authorized(false), dataPath(path), masterPassword(username, path) {
+            username(username), authorized(false), dataPath(path), masterPassword() {
 //        Existing user constructor
-        try {
-            masterPassword.setPassword(username);
-        }
-        catch (const std::runtime_error &error) {
-//            Rethrow
-            throw;
-        }
-        authSequence(password);
     };
 
-    void authSequence(std::string &input) {
-        Password inputPassword(input);
-        if (inputPassword == masterPassword) {
-            authorized = true;
+    int authSequence(std::string &input) {
+        if (masterPassword.setPassword(username, dataPath) == 0) {
+            Password inputPassword(input);
+            if (inputPassword == masterPassword) {
+                authorized = true;
+                return 0;
+            }
         }
+        return 1;
     };
 
     int registerSequence(std::string &new_username, std::string &new_password) {
@@ -119,7 +114,7 @@ public:
         if (std::filesystem::exists(filename)) {
             return 1;
         } else {
-            // Create a file for this user
+//            Create a file for this user
             std::ofstream createdFile(filename);
             if (!createdFile) {
                 throw std::runtime_error("Failed to create file: " + filename);
