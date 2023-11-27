@@ -9,17 +9,18 @@ include_directories(${OPENSSL_INCLUDE_DIR})
 
 set(CMAKE_CXX_STANDARD 17)
 
-add_executable(passwords
-        Manager.h
-        Manager.cpp
-        PasswordHasher.h
-        PasswordHasher.cpp
-        HasherKDF.h
-        HasherKDF.cpp
-        Password.h
-        Password.cpp
-        User.h
-        User.cpp
+add_executable(
+        passwords
+        classes/Manager.h
+        classes/Manager.cpp
+        classes/PasswordHasher.h
+        classes/PasswordHasher.cpp
+        classes/HasherKDF.h
+        classes/HasherKDF.cpp
+        classes/Password.h
+        classes/Password.cpp
+        classes/User.h
+        classes/User.cpp
         main.cpp
 )
 
