@@ -8,9 +8,6 @@
 #include "PasswordHasher.h"
 #include "HasherKDF.h"
 
-//using namespace std;
-
-
 class BasePassword {
 protected:
     std::string hash;
@@ -25,6 +22,9 @@ public:
         return hash;
     }
 
+    virtual ~BasePassword() = 0;
+
+    [[nodiscard]] std::string getHash() const { if (!hash.empty()) return hash; }
 };
 
 class Password : public BasePassword {
@@ -54,6 +54,8 @@ public:
 
 //    Unused
     [[nodiscard]] std::string getName() const { return name; }
+
+    ~Password() override = default;
 };
 
 class MasterPassword : public BasePassword {
@@ -78,7 +80,7 @@ public:
         return 0;
     }
 
-    [[nodiscard]] std::string getHash() const { if (!hash.empty()) return hash; }
+    ~MasterPassword() override = default;
 };
 
 class User {
