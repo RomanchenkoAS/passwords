@@ -1,6 +1,7 @@
 #include <iostream>
 #include <filesystem> // for getting data directory path
-#include "Manager.cpp" // TODO must be a headerfile
+#include "Manager.h"
+#include "User.h"
 
 std::string getBasePath() {
     return std::filesystem::current_path().string();

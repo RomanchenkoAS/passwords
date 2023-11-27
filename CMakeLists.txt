@@ -10,12 +10,17 @@ include_directories(${OPENSSL_INCLUDE_DIR})
 set(CMAKE_CXX_STANDARD 17)
 
 add_executable(passwords
-        main.cpp
+        Manager.h
         Manager.cpp
         PasswordHasher.h
         PasswordHasher.cpp
         HasherKDF.h
         HasherKDF.cpp
+        Password.h
+        Password.cpp
+        User.h
+        User.cpp
+        main.cpp
 )
 
 # Link OpenSSL to executable
