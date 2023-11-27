@@ -12,6 +12,10 @@ private:
 //    Common initialization for encryption and decryption
     static void initializeCipher(EVP_CIPHER_CTX *ctx, const std::string &key, bool encrypting);
 
+    static std::string toHex(const unsigned char *data, size_t length);
+
+    static std::string fromHex(const std::string &hex);
+
 public:
     HasherKDF() = default;
 
