@@ -187,7 +187,11 @@ public:
 
             std::string line;
             while (getline(file, line)) {
-                line = decrypt(user->getEncryptionKey(), line);
+                try {
+                    line = decrypt(user->getEncryptionKey(), line);
+                } catch (const std::runtime_error &error) {
+                    throw std::runtime_error("Failed to decrypt content. Check credentials and filename.");
+                }
                 const auto [name, value] = parse(line);
                 passwordsList.push_back(Password(name, value));
             }
@@ -231,7 +235,12 @@ public:
 
         for (const auto &password: passwordsList) {
             std::string passwordCSV = password.getCSV();
-            std::string encryptedLine = encrypt(user->getEncryptionKey(), passwordCSV);
+            std::string encryptedLine;
+            try {
+                encryptedLine = encrypt(user->getEncryptionKey(), passwordCSV);
+            } catch (const std::runtime_error &error) {
+                throw std::runtime_error("Failed to encrypt content. Check credentials and filename.");
+            }
             std::transform(encryptedLine.begin(), encryptedLine.end(), encryptedLine.begin(), ::toupper);
             outfile << encryptedLine << std::endl;
         }
