@@ -85,7 +85,6 @@ int main() {
                 User new_user(dataDir);
 
                 try {
-
                     if (new_user.registerSequence(username, password) == 1) {
                         std::cout << "\nUser already exists, choose a different username.";
                     } else {
