@@ -1,13 +1,10 @@
 #pragma once
 
-#ifndef PASSWORDS_HASHERKDF_H
-#define PASSWORDS_HASHERKDF_H
-
 #include <iostream>
 #include <openssl/kdf.h> // for ciphering data
 
+//  Two-way encryptor/decryptor using Key Derivation Function (KDF)
 class HasherKDF {
-//    Two-way encryptor/decryptor using Key Derivation Function (KDF)
 private:
 //    Key derivation function
     static std::string deriveKey(const std::string &key);
@@ -24,5 +21,3 @@ public:
     // Decrypts the input string using the key
     [[nodiscard]] static std::string decrypt(const std::string &key, const std::string &inputHex);
 };
-
-#endif //PASSWORDS_HASHERKDF_H

@@ -1,8 +1,5 @@
 #pragma once
 
-#ifndef PASSWORD_HASHER_H
-#define PASSWORD_HASHER_H
-
 #include <string>
 #include <fstream>
 #include <iostream>
@@ -67,5 +64,3 @@ public:
         return validate(other);
     }
 };
-
-#endif //PASSWORD_HASHER_H
