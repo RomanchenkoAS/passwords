@@ -7,7 +7,6 @@
 #include <utility> // for std::move()
 #include <sstream> // for operating with string as a stream
 
-
 class AbstractPasswordHasher {
 protected:
     std::string binary_hash;

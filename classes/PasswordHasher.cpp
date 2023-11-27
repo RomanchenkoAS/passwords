@@ -1,9 +1,8 @@
-#include "PasswordHasher.h"
-
 #include <algorithm> // for std::transform()
 #include <fstream> // for file IO
 #include <iomanip> // for input/output manipulation (toHex)
 #include <bitset> // for displaying binary hash (debug)
+#include "PasswordHasher.h"
 
 void AbstractPasswordHasher::toHex() {
 //    Transform binary hash string into hexadecimal
