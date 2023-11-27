@@ -33,6 +33,7 @@ std::string HasherKDF::fromHex(const std::string &hex) {
 //    For each two characters do:
     for (size_t i = 0; i < hex.size(); i += 2) {
         std::string byteString = hex.substr(i, 2);
+//        Convert to int and then to char
         char byte = (char) (std::stoi(byteString, nullptr, 16));
         bytes.push_back(byte);
     }
@@ -101,24 +102,29 @@ std::string HasherKDF::decrypt(const std::string &key, const std::string &inputH
 //    Get proper binary line from hexadecimal
     std::string input = fromHex(inputHex);
 
+//    Create context object
     EVP_CIPHER_CTX *ctx = EVP_CIPHER_CTX_new();
     if (!ctx) {
         throw std::runtime_error("Failed to create cipher context");
     }
 
+//    Initialize context from key
     std::string derivedKey = deriveKey(key);
     initializeCipher(ctx, derivedKey, false);  // false for decryption
 
+//    Set correct size of processed text
     std::string plaintext;
     plaintext.resize(input.size());
     int len = 0;
 
+//    Add to digest context
     if (!EVP_CipherUpdate(ctx, reinterpret_cast<unsigned char *>(&plaintext[0]), &len,
                           reinterpret_cast<const unsigned char *>(input.data()), input.size())) {
         EVP_CIPHER_CTX_free(ctx);
         throw std::runtime_error("Decryption failed");
     }
 
+//    Finalize digest context
     int finalLen = 0;
     if (!EVP_CipherFinal_ex(ctx, reinterpret_cast<unsigned char *>(&plaintext[len]), &finalLen)) {
         EVP_CIPHER_CTX_free(ctx);
@@ -126,6 +132,8 @@ std::string HasherKDF::decrypt(const std::string &key, const std::string &inputH
     }
 
     plaintext.resize(len + finalLen);
+
+//    Deallocate memory
     EVP_CIPHER_CTX_free(ctx);
 
     return plaintext;
