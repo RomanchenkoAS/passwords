@@ -16,11 +16,6 @@ private:
     std::vector<Password> passwordsList;
     std::ifstream file;
 
-public:
-    explicit Manager(
-            User *user, const std::string &path
-    ) : user(user), filename(path + PasswordHasher(user->getUsername()).getHash()) {}
-
     static std::string decrypt(const std::string &key, std::string &line) {
         return HasherKDF::decrypt(key, line);
     };
@@ -31,10 +26,7 @@ public:
 
     static std::pair<std::string, std::string> parse(const std::string &line);
 
-    void openFile();
-
-    void initialize();
-
+//    CRUD part
     void displayPasswords();
 
     void writePasswords();
@@ -43,9 +35,23 @@ public:
 
     void createPasswordMenu();
 
+    int editPassword(int index);
+
+    void editPasswordMenu();
+
     int deletePassword(int index);
 
     void deletePasswordMenu();
+
+public:
+
+    explicit Manager(
+            User *user, const std::string &path
+    ) : user(user), filename(path + PasswordHasher(user->getUsername()).getHash()) {}
+
+    void openFile();
+
+    void initialize();
 
     void menu();
 };

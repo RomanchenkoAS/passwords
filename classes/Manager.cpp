@@ -110,6 +110,37 @@ void Manager::createPasswordMenu() {
     createPassword(name, password);
 }
 
+// TODO change that
+int Manager::editPassword(int index) {
+    if (index < passwordsList.size()) {
+        passwordsList.erase(passwordsList.begin() + index);
+        writePasswords();
+        return 0;
+    } else {
+        return 1;
+    }
+}
+
+// TODO change that
+void Manager::editPasswordMenu() {
+    if (passwordsList.empty()) {
+        std::cout << std::endl << "No passwords in " << user->getUsername() << "'s manager yet.\n";
+        return;
+    }
+    int index;
+    std::cout << "\nIndex of password to delete (0 to cancel action): ";
+    std::cin >> index;
+    if (index == 0) {
+        std::cout << "Action canceled." << std::endl;
+    } else {
+        int status = deletePassword(index - 1);
+        if (status == 1) {
+            std::cout << "Invalid index." << std::endl;
+        }
+    }
+};
+
+
 int Manager::deletePassword(int index) {
     if (index < passwordsList.size()) {
         passwordsList.erase(passwordsList.begin() + index);
@@ -145,7 +176,8 @@ void Manager::menu() {
         std::cout << "\nMenu:\n";
         std::cout << "1. Display passwords\n";
         std::cout << "2. Add password\n";
-        std::cout << "3. Delete password\n";
+        std::cout << "3. Edit password\n";
+        std::cout << "4. Delete password\n";
         std::cout << "0. Exit\n";
         std::cout << "Enter your choice: ";
         std::cin >> choice;
@@ -160,6 +192,10 @@ void Manager::menu() {
                 break;
             }
             case 3: {
+                editPasswordMenu();
+                break;
+            }
+            case 4: {
                 deletePasswordMenu();
                 break;
             }
