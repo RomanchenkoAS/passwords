@@ -27,17 +27,15 @@ private:
     static std::pair<std::string, std::string> parse(const std::string &line);
 
 //    CRUD part
-    void displayPasswords();
+    void readPasswords();
 
     void writePasswords();
 
-    void createPassword(const std::string &name, const std::string &password);
-
     void createPasswordMenu();
 
-    int editPassword(int index);
+    int updatePassword(int index);
 
-    void editPasswordMenu();
+    void updatePasswordMenu();
 
     int deletePassword(int index);
 

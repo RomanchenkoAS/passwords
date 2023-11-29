@@ -5,7 +5,6 @@
 #include "PasswordHasher.h"
 #include "Password.h"
 
-
 std::pair<std::string, std::string> Manager::parse(const std::string &line) {
 //    Parse comma separated std::string into three values
     std::stringstream ss(line);
@@ -41,7 +40,8 @@ void Manager::initialize() {
                 throw std::runtime_error("Failed to decrypt content. Check credentials and filename.");
             }
             const auto [name, value] = parse(line);
-            passwordsList.push_back(Password(name, value));
+//            Create a password and push_back it in one move
+            passwordsList.emplace_back(name, value);
         }
         file.close();
     } else {
@@ -49,7 +49,7 @@ void Manager::initialize() {
     }
 };
 
-void Manager::displayPasswords() {
+void Manager::readPasswords() {
     if (passwordsList.empty()) {
         std::cout << std::endl << "No passwords in " << user->getUsername() << "'s manager yet.\n";
         return;
@@ -96,10 +96,10 @@ void Manager::writePasswords() {
     outfile.close();
 }
 
-void Manager::createPassword(const std::string &name, const std::string &password) {
-    passwordsList.push_back(Password(name, password));
-    writePasswords();
-}
+//void Manager::createPassword(const std::string &name, const std::string &password) {
+//    passwordsList.push_back(Password(name, password));
+//    writePasswords();
+//}
 
 void Manager::createPasswordMenu() {
     std::string name, password;
@@ -107,13 +107,20 @@ void Manager::createPasswordMenu() {
     std::cin >> name;
     std::cout << "Password: ";
     std::cin >> password;
-    createPassword(name, password);
+
+//    Create a password and push_back it in one move
+    passwordsList.emplace_back(name, password);
+    writePasswords();
 }
 
-// TODO change that
-int Manager::editPassword(int index) {
+int Manager::updatePassword(int index) {
     if (index < passwordsList.size()) {
-        passwordsList.erase(passwordsList.begin() + index);
+        std::string name, password;
+        std::cout << "New name: ";
+        std::cin >> name;
+        std::cout << "New password: ";
+        std::cin >> password;
+        passwordsList[index] = (Password(name, password));
         writePasswords();
         return 0;
     } else {
@@ -121,21 +128,22 @@ int Manager::editPassword(int index) {
     }
 }
 
-// TODO change that
-void Manager::editPasswordMenu() {
+void Manager::updatePasswordMenu() {
     if (passwordsList.empty()) {
         std::cout << std::endl << "No passwords in " << user->getUsername() << "'s manager yet.\n";
         return;
     }
     int index;
-    std::cout << "\nIndex of password to delete (0 to cancel action): ";
+    std::cout << "\nIndex of password to edit (0 to cancel action): ";
     std::cin >> index;
     if (index == 0) {
         std::cout << "Action canceled." << std::endl;
     } else {
-        int status = deletePassword(index - 1);
+        int status = updatePassword(index - 1);
         if (status == 1) {
             std::cout << "Invalid index." << std::endl;
+        } else {
+            std::cout << "Password saved." << std::endl;
         }
     }
 };
@@ -173,7 +181,7 @@ void Manager::deletePasswordMenu() {
 void Manager::menu() {
     int choice;
     do {
-        std::cout << "\nMenu:\n";
+        std::cout << "\n----- Menu -----\n";
         std::cout << "1. Display passwords\n";
         std::cout << "2. Add password\n";
         std::cout << "3. Edit password\n";
@@ -184,7 +192,7 @@ void Manager::menu() {
 
         switch (choice) {
             case 1: {
-                displayPasswords();
+                readPasswords();
                 break;
             }
             case 2: {
@@ -192,7 +200,7 @@ void Manager::menu() {
                 break;
             }
             case 3: {
-                editPasswordMenu();
+                updatePasswordMenu();
                 break;
             }
             case 4: {
