@@ -1,4 +1,9 @@
+# IDE
 .idea
-main
 cmake-build-debug
+
+# cmake build
+build
+
+# local data storage
 data
