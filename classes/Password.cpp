@@ -33,5 +33,6 @@ int MasterPassword::setPassword(const std::string &inputUsername, const std::str
     }
 //    Read content of first line into hash
     getline(file, hash);
+    file.close();
     return 0;
 }
