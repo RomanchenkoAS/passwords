@@ -11,10 +11,10 @@ private:
 
 public:
 //    New user constructor
-    explicit User(const std::string &path) {};
+    explicit User(const std::string &path) : dataPath(path) {};
 
 //    Existing user constructor
-    explicit User(std::string &username, std::string &password, const std::string &path) :
+    explicit User(std::string &username, const std::string &path) :
             username(username), dataPath(path), masterPassword() {};
 
     int authSequence(std::string &input);

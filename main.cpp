@@ -9,7 +9,7 @@ std::string getBasePath() {
 
 int mainMenu() {
     int choice;
-    std::cout << "\nHello!\n";
+    std::cout << "\n----- Hello! -----\n";
     std::cout << "1. Log in\n";
     std::cout << "2. Sign up\n";
     std::cout << "0. Exit\n";
@@ -28,30 +28,29 @@ std::pair<std::string, std::string> logInMenu() {
 }
 
 std::pair<std::string, std::string> registerMenu() {
-    std::string username, password = "1", passwordConfirmation = "2";
-    while (true) {
+    std::string username, password1 = "1", password2 = "2";
+    while (password1 != password2) {
         if (username.empty()) {
 //            Skip entering username if it is already entered
             std::cout << "\nUsername: ";
             std::cin >> username;
         }
         std::cout << "Password: ";
-        std::cin >> password;
+        std::cin >> password1;
         std::cout << "Confirm password: ";
-        std::cin >> passwordConfirmation;
-        if (password != passwordConfirmation) {
+        std::cin >> password2;
+        if (password1 != password2) {
             std::cout << "Passwords don't match, try again.\n";
-        } else {
-            break;
         }
     }
-    return make_pair(std::string(username), std::string(password));
+    return make_pair(std::string(username), std::string(password1));
 }
 
 int main() {
 
     const std::string basePath = getBasePath();
     const std::string dataDir = basePath + "/../data/";
+    std::cout << "data dir full path = " << dataDir << std::endl;
 
     // Make sure dataDir exists
     if (!std::filesystem::exists(dataDir)) {
@@ -64,7 +63,7 @@ int main() {
         switch (choice) {
             case 1: {
                 auto [username, password] = logInMenu();
-                User user(username, password, dataDir);
+                User user(username, dataDir);
 
                 try {
                     if (user.authSequence(password) == 1) {
@@ -88,7 +87,7 @@ int main() {
                     if (new_user.registerSequence(username, password) == 1) {
                         std::cout << "\nUser already exists, choose a different username.";
                     } else {
-                        std::cout << "\nUser created, now log in with provided credentials.";
+                        std::cout << "\nUser created, now log in with provided credentials.\n";
                     }
                 } catch (const std::runtime_error &error) {
                     std::cout << "\nInvalid username or password. " << std::endl;
