@@ -25,10 +25,10 @@ void AbstractPasswordHasher::calculateHash() {
     if (digest_context == nullptr) {
         throw std::runtime_error("Failed to create EVP_MD_CTX");
     }
-//        Initialize digest operation
+//    Initialize digest operation
     initializeDigest(digest_context);
 
-//        Process input and update hash_array
+//    Process input and update hash_array
     if (!input.empty()) {
         if (EVP_DigestUpdate(digest_context, input.data(), input.size()) != 1) {
             EVP_MD_CTX_free(digest_context);
@@ -36,24 +36,24 @@ void AbstractPasswordHasher::calculateHash() {
         }
     }
 
-//        Finish processing hash_array
+//    Finish processing hash_array
     unsigned char hash_array[EVP_MAX_MD_SIZE];
     unsigned int lengthOfHash = 0;
     if (EVP_DigestFinal_ex(digest_context, hash_array, &lengthOfHash) != 1) {
-//            Free memory
+//        Free memory
         EVP_MD_CTX_free(digest_context);
         throw std::runtime_error("Failed to finalize digest");
     }
 
     EVP_MD_CTX_free(digest_context);
 
-//        Turn to string and generate hexadecimal hash_array
+//    Turn to string and generate hexadecimal hash_array
     binary_hash = std::string(reinterpret_cast<const char *>(hash_array), lengthOfHash);
     toHex();
 };
 
 void AbstractPasswordHasher::checkHash() {
-//        Make sure hash is already generated
+//    Make sure hash is already generated
     if (binary_hash.empty()) {
         calculateHash();
     }
